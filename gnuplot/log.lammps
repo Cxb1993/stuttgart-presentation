@@ -1,0 +1,657 @@
+# use SI units
+units              si
+atom_style         meso
+
+# dimension (2 or 3)
+dimension         ${ndim}
+dimension         3
+include           vars.lmp
+# number of particles in each of the directions
+variable          nx   equal 20
+variable          ny   equal ${nx}
+variable          ny   equal 20
+if ${ndim}==3 then "variable nz equal ${nx}"
+if 3==3 then "variable nz equal ${nx}"
+variable nz equal ${nx}
+variable nz equal 20
+# size of the domain
+variable          Lx   equal  1.0
+variable          Ly   equal  ${Lx}
+variable          Ly   equal  1
+if ${ndim}==3 then "variable         Lz   equal ${Lx}"
+if 3==3 then "variable         Lz   equal ${Lx}"
+variable         Lz   equal ${Lx}
+variable         Lz   equal 1
+variable          dx   equal  1.0/${nx}
+variable          dx   equal  1.0/20
+
+# density of the liquid (water)
+variable          sph_rho_l equal 1.0
+# density of the bubble (vapor) 
+variable          sph_rho_v equal 0.01
+
+# sound speed
+variable          sph_c_v equal 200/sqrt(${sph_rho_v})
+variable          sph_c_v equal 200/sqrt(0.010000000000000000208)
+variable          sph_c_l equal 200/sqrt(${sph_rho_l})
+variable          sph_c_l equal 200/sqrt(1)
+
+# viscosity
+variable          sph_eta_v equal 0.69395
+variable          sph_eta_l equal 1.0
+
+# extract that rbackground in the equation of state
+# pressure ~ ( rho/rho0 - rbackground)^gamma
+variable          rbackground equal 0.0
+
+variable          h equal 3.0*${dx}
+variable          h equal 3.0*0.050000000000000002776
+variable          Nfreq equal 100
+
+# mass of vapor particle
+variable          mass_v equal ${dx}^${ndim}*${sph_rho_v}
+variable          mass_v equal 0.050000000000000002776^${ndim}*${sph_rho_v}
+variable          mass_v equal 0.050000000000000002776^3*${sph_rho_v}
+variable          mass_v equal 0.050000000000000002776^3*0.010000000000000000208
+# mass of gas particle
+variable          mass_l equal ${dx}^${ndim}*${sph_rho_l}
+variable          mass_l equal 0.050000000000000002776^${ndim}*${sph_rho_l}
+variable          mass_l equal 0.050000000000000002776^3*${sph_rho_l}
+variable          mass_l equal 0.050000000000000002776^3*1
+
+# surface tension
+variable           alpha    equal 500
+variable           D_heat_v equal 0.6
+variable           D_heat_l equal 0.2
+
+variable          cv_v      equal 0.04
+variable          cv_l      equal 0.04
+variable           dT   equal 0.1
+variable           Tinf equal 1.0
+variable           Tc equal 0.0
+variable           Tt equal ${Tc}+${dT}
+variable           Tt equal 0+${dT}
+variable           Tt equal 0+0.10000000000000000555
+# energy
+variable          e_v       equal ${cv_v}*${Tc}
+variable          e_v       equal 0.040000000000000000833*${Tc}
+variable          e_v       equal 0.040000000000000000833*0
+variable          e_l       equal ${cv_l}*${Tinf}
+variable          e_l       equal 0.040000000000000000833*${Tinf}
+variable          e_l       equal 0.040000000000000000833*1
+
+# type of the gas particle (liquid)
+variable          l_type equal 1
+# type of the bubble particle (vapor)
+variable          v_type equal 2
+
+# create simulation box
+variable           xcenter equal 0.5*${Lx}
+variable           xcenter equal 0.5*1
+variable           ycenter equal 0.5*${Ly}
+variable           ycenter equal 0.5*1
+if ${ndim}==3 then "variable           zcenter equal 0.5*${Lz}" else "variable           zcenter equal 0.0" 
+if 3==3 then "variable           zcenter equal 0.5*${Lz}" else "variable           zcenter equal 0.0" 
+variable           zcenter equal 0.5*${Lz}
+variable           zcenter equal 0.5*1if ${ndim}==2 then "region             box block 0.0 ${Lx}  0.0 ${Ly} 0 ${dx} units box" else "region             box block 0.0 ${Lx}  0.0 ${Ly} 0.0 ${Lz} units box"
+if 3==2 then "region             box block 0.0 ${Lx}  0.0 ${Ly} 0 ${dx} units box" else "region             box block 0.0 ${Lx}  0.0 ${Ly} 0.0 ${Lz} units box"
+region             box block 0.0 ${Lx}  0.0 ${Ly} 0.0 ${Lz} units box
+region             box block 0.0 1  0.0 ${Ly} 0.0 ${Lz} units boxregion             box block 0.0 1  0.0 1 0.0 ${Lz} units boxregion             box block 0.0 1  0.0 1 0.0 1 units box
+# we have two times of atoms: vapor and liquid
+create_box         2 box
+Created orthogonal box = (0 0 0) to (1 1 1)
+  2 by 2 by 2 MPI processor grid
+
+if ${ndim}==2 then "lattice            sq ${dx} origin 0.5 0.5 0" else "lattice            sc ${dx} origin 0.5 0.5 0.5"
+if 3==2 then "lattice            sq ${dx} origin 0.5 0.5 0" else "lattice            sc ${dx} origin 0.5 0.5 0.5"
+lattice            sc ${dx} origin 0.5 0.5 0.5
+lattice            sc 0.050000000000000002776 origin 0.5 0.5 0.5Lattice spacing in x,y,z = 0.05 0.05 0.05
+
+# create liquid atoms
+create_atoms       ${l_type} region box
+create_atoms       1 region box
+Created 8000 atoms
+
+# do full time integration for all particles
+fix                integrate_fix_full all meso
+
+# get time step
+include            settimestep.lmp
+variable BIG equal 1e20
+
+variable beta equal 0.1
+if "${D_heat_v}>0" then "variable dt_temp_v equal ${beta}*1.44*${sph_rho_v}*${cv_v}*${dx}^2/${D_heat_v}" else "variable dt_temp_v equal ${BIG}"
+variable dt_temp_v equal ${beta}*1.44*${sph_rho_v}*${cv_v}*${dx}^2/${D_heat_v}
+variable dt_temp_v equal 0.10000000000000000555*1.44*${sph_rho_v}*${cv_v}*${dx}^2/${D_heat_v}variable dt_temp_v equal 0.10000000000000000555*1.44*0.010000000000000000208*${cv_v}*${dx}^2/${D_heat_v}variable dt_temp_v equal 0.10000000000000000555*1.44*0.010000000000000000208*0.040000000000000000833*${dx}^2/${D_heat_v}variable dt_temp_v equal 0.10000000000000000555*1.44*0.010000000000000000208*0.040000000000000000833*0.050000000000000002776^2/${D_heat_v}variable dt_temp_v equal 0.10000000000000000555*1.44*0.010000000000000000208*0.040000000000000000833*0.050000000000000002776^2/0.5999999999999999778
+if "${D_heat_l}>0" then "variable dt_temp_l equal ${beta}*1.44*${sph_rho_l}*${cv_l}*${dx}^2/${D_heat_l}" else "variable dt_temp_l equal ${BIG}"
+variable dt_temp_l equal ${beta}*1.44*${sph_rho_l}*${cv_l}*${dx}^2/${D_heat_l}
+variable dt_temp_l equal 0.10000000000000000555*1.44*${sph_rho_l}*${cv_l}*${dx}^2/${D_heat_l}variable dt_temp_l equal 0.10000000000000000555*1.44*1*${cv_l}*${dx}^2/${D_heat_l}variable dt_temp_l equal 0.10000000000000000555*1.44*1*0.040000000000000000833*${dx}^2/${D_heat_l}variable dt_temp_l equal 0.10000000000000000555*1.44*1*0.040000000000000000833*0.050000000000000002776^2/${D_heat_l}variable dt_temp_l equal 0.10000000000000000555*1.44*1*0.040000000000000000833*0.050000000000000002776^2/0.2000000000000000111
+variable dt_eta_v equal 1/8.0*${dx}*${dx}/${sph_eta_v}*${sph_rho_v}
+variable dt_eta_v equal 1/8.0*0.050000000000000002776*${dx}/${sph_eta_v}*${sph_rho_v}
+variable dt_eta_v equal 1/8.0*0.050000000000000002776*0.050000000000000002776/${sph_eta_v}*${sph_rho_v}
+variable dt_eta_v equal 1/8.0*0.050000000000000002776*0.050000000000000002776/0.69394999999999995577*${sph_rho_v}
+variable dt_eta_v equal 1/8.0*0.050000000000000002776*0.050000000000000002776/0.69394999999999995577*0.010000000000000000208
+variable dt_eta_l equal 1/8.0*${dx}*${dx}/${sph_eta_l}*${sph_rho_l}
+variable dt_eta_l equal 1/8.0*0.050000000000000002776*${dx}/${sph_eta_l}*${sph_rho_l}
+variable dt_eta_l equal 1/8.0*0.050000000000000002776*0.050000000000000002776/${sph_eta_l}*${sph_rho_l}
+variable dt_eta_l equal 1/8.0*0.050000000000000002776*0.050000000000000002776/1*${sph_rho_l}
+variable dt_eta_l equal 1/8.0*0.050000000000000002776*0.050000000000000002776/1*1
+
+if "${alpha}>0" then  "variable dt_alpha_v equal 1/4.0*sqrt(${sph_rho_v}*${dx}^3/(6.0*${alpha}))" else "variable dt_alpha_v equal ${BIG}"
+variable dt_alpha_v equal 1/4.0*sqrt(${sph_rho_v}*${dx}^3/(6.0*${alpha}))
+variable dt_alpha_v equal 1/4.0*sqrt(0.010000000000000000208*${dx}^3/(6.0*${alpha}))variable dt_alpha_v equal 1/4.0*sqrt(0.010000000000000000208*0.050000000000000002776^3/(6.0*${alpha}))variable dt_alpha_v equal 1/4.0*sqrt(0.010000000000000000208*0.050000000000000002776^3/(6.0*500))
+if "${alpha}>0" then  "variable dt_alpha_l equal 1/4.0*sqrt(${sph_rho_l}*${dx}^3/(6.0*${alpha}))" else "variable dt_alpha_l equal ${BIG}"
+variable dt_alpha_l equal 1/4.0*sqrt(${sph_rho_l}*${dx}^3/(6.0*${alpha}))
+variable dt_alpha_l equal 1/4.0*sqrt(1*${dx}^3/(6.0*${alpha}))variable dt_alpha_l equal 1/4.0*sqrt(1*0.050000000000000002776^3/(6.0*${alpha}))variable dt_alpha_l equal 1/4.0*sqrt(1*0.050000000000000002776^3/(6.0*500))
+if "${sph_rho_v}>0" then "variable dt_c_v equal 1/4.0*${dx}/${sph_c_v}" else "variable dt_c_v equal ${BIG}"
+variable dt_c_v equal 1/4.0*${dx}/${sph_c_v}
+variable dt_c_v equal 1/4.0*0.050000000000000002776/${sph_c_v}variable dt_c_v equal 1/4.0*0.050000000000000002776/2000
+if "${sph_rho_l}>0" then "variable dt_c_l equal 1/4.0*${dx}/${sph_c_l}" else "variable dt_c_l equal ${BIG}"
+variable dt_c_l equal 1/4.0*${dx}/${sph_c_l}
+variable dt_c_l equal 1/4.0*0.050000000000000002776/${sph_c_l}variable dt_c_l equal 1/4.0*0.050000000000000002776/200
+shell ./min.sh dt ${dt_eta_v} ${dt_eta_l} ${dt_alpha_v} ${dt_alpha_l} ${dt_c_v} ${dt_c_l} ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 ${dt_eta_l} ${dt_alpha_v} ${dt_alpha_l} ${dt_c_v} ${dt_c_l} ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 ${dt_alpha_v} ${dt_alpha_l} ${dt_c_v} ${dt_c_l} ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 5.103103630798288042e-06 ${dt_alpha_l} ${dt_c_v} ${dt_c_l} ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 5.103103630798288042e-06 5.1031036307982885502e-05 ${dt_c_v} ${dt_c_l} ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 5.103103630798288042e-06 5.1031036307982885502e-05 6.2500000000000002995e-06 ${dt_c_l} ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 5.103103630798288042e-06 5.1031036307982885502e-05 6.2500000000000002995e-06 6.2500000000000001301e-05 ${dt_temp_l} ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 5.103103630798288042e-06 5.1031036307982885502e-05 6.2500000000000002995e-06 6.2500000000000001301e-05 7.1999999999999988272e-05 ${dt_temp_v}
+shell ./min.sh dt 4.5032062828734070728e-06 0.00031250000000000006072 5.103103630798288042e-06 5.1031036307982885502e-05 6.2500000000000002995e-06 6.2500000000000001301e-05 7.1999999999999988272e-05 2.3999999999999997855e-07
+include in.dt
+variable dt equal 2.3999999999999997855e-07
+variable dt equal ${dt}variable dt equal 2.3999999999999997855e-07timestep           ${dt}
+timestep           2.3999999999999997855e-07
+
+neighbor           0 bin
+neigh_modify       delay 0 every 1
+communicate        single vel yes
+
+pair_style         hybrid/overlay sph/rhosum_multiphase 1 sph/colorgradient 1                    sph/taitwater/multiphase sph/surfacetension sph/heatconduction/phasechange
+pair_coeff         * * sph/rhosum_multiphase   ${h}
+pair_coeff         * * sph/rhosum_multiphase   0.1500000000000000222
+pair_coeff         ${v_type} ${v_type} sph/colorgradient ${h} 0
+pair_coeff         2 ${v_type} sph/colorgradient ${h} 0
+pair_coeff         2 2 sph/colorgradient ${h} 0
+pair_coeff         2 2 sph/colorgradient 0.1500000000000000222 0
+pair_coeff         ${l_type} ${v_type} sph/colorgradient ${h} ${alpha}
+pair_coeff         1 ${v_type} sph/colorgradient ${h} ${alpha}
+pair_coeff         1 2 sph/colorgradient ${h} ${alpha}
+pair_coeff         1 2 sph/colorgradient 0.1500000000000000222 ${alpha}
+pair_coeff         1 2 sph/colorgradient 0.1500000000000000222 500
+pair_coeff         ${l_type} ${l_type} sph/colorgradient ${h} 0
+pair_coeff         1 ${l_type} sph/colorgradient ${h} 0
+pair_coeff         1 1 sph/colorgradient ${h} 0
+pair_coeff         1 1 sph/colorgradient 0.1500000000000000222 0
+
+variable           sph_eta_ld equal 2*${sph_eta_l}*${sph_eta_v}/(${sph_eta_v}+${sph_eta_l})
+variable           sph_eta_ld equal 2*1*${sph_eta_v}/(${sph_eta_v}+${sph_eta_l})
+variable           sph_eta_ld equal 2*1*0.69394999999999995577/(${sph_eta_v}+${sph_eta_l})
+variable           sph_eta_ld equal 2*1*0.69394999999999995577/(0.69394999999999995577+${sph_eta_l})
+variable           sph_eta_ld equal 2*1*0.69394999999999995577/(0.69394999999999995577+1)
+pair_coeff         ${l_type} ${v_type} sph/taitwater/multiphase ${sph_rho_l} ${sph_c_l} ${sph_eta_ld} 7.0 ${h} ${rbackground}
+pair_coeff         1 ${v_type} sph/taitwater/multiphase ${sph_rho_l} ${sph_c_l} ${sph_eta_ld} 7.0 ${h} ${rbackground}
+pair_coeff         1 2 sph/taitwater/multiphase ${sph_rho_l} ${sph_c_l} ${sph_eta_ld} 7.0 ${h} ${rbackground}
+pair_coeff         1 2 sph/taitwater/multiphase 1 ${sph_c_l} ${sph_eta_ld} 7.0 ${h} ${rbackground}
+pair_coeff         1 2 sph/taitwater/multiphase 1 200 ${sph_eta_ld} 7.0 ${h} ${rbackground}
+pair_coeff         1 2 sph/taitwater/multiphase 1 200 0.81932760707222751506 7.0 ${h} ${rbackground}
+pair_coeff         1 2 sph/taitwater/multiphase 1 200 0.81932760707222751506 7.0 0.1500000000000000222 ${rbackground}
+pair_coeff         1 2 sph/taitwater/multiphase 1 200 0.81932760707222751506 7.0 0.1500000000000000222 0
+pair_coeff         ${l_type} ${l_type} sph/taitwater/multiphase ${sph_rho_l} ${sph_c_l}  ${sph_eta_l} 7.0 ${h} ${rbackground}
+pair_coeff         1 ${l_type} sph/taitwater/multiphase ${sph_rho_l} ${sph_c_l}  ${sph_eta_l} 7.0 ${h} ${rbackground}
+pair_coeff         1 1 sph/taitwater/multiphase ${sph_rho_l} ${sph_c_l}  ${sph_eta_l} 7.0 ${h} ${rbackground}
+pair_coeff         1 1 sph/taitwater/multiphase 1 ${sph_c_l}  ${sph_eta_l} 7.0 ${h} ${rbackground}
+pair_coeff         1 1 sph/taitwater/multiphase 1 200  ${sph_eta_l} 7.0 ${h} ${rbackground}
+pair_coeff         1 1 sph/taitwater/multiphase 1 200  1 7.0 ${h} ${rbackground}
+pair_coeff         1 1 sph/taitwater/multiphase 1 200  1 7.0 0.1500000000000000222 ${rbackground}
+pair_coeff         1 1 sph/taitwater/multiphase 1 200  1 7.0 0.1500000000000000222 0
+pair_coeff         ${v_type} ${v_type} sph/taitwater/multiphase ${sph_rho_v} ${sph_c_v}  ${sph_eta_v} 7.0 ${h} ${rbackground}
+pair_coeff         2 ${v_type} sph/taitwater/multiphase ${sph_rho_v} ${sph_c_v}  ${sph_eta_v} 7.0 ${h} ${rbackground}
+pair_coeff         2 2 sph/taitwater/multiphase ${sph_rho_v} ${sph_c_v}  ${sph_eta_v} 7.0 ${h} ${rbackground}
+pair_coeff         2 2 sph/taitwater/multiphase 0.010000000000000000208 ${sph_c_v}  ${sph_eta_v} 7.0 ${h} ${rbackground}
+pair_coeff         2 2 sph/taitwater/multiphase 0.010000000000000000208 2000  ${sph_eta_v} 7.0 ${h} ${rbackground}
+pair_coeff         2 2 sph/taitwater/multiphase 0.010000000000000000208 2000  0.69394999999999995577 7.0 ${h} ${rbackground}
+pair_coeff         2 2 sph/taitwater/multiphase 0.010000000000000000208 2000  0.69394999999999995577 7.0 0.1500000000000000222 ${rbackground}
+pair_coeff         2 2 sph/taitwater/multiphase 0.010000000000000000208 2000  0.69394999999999995577 7.0 0.1500000000000000222 0
+
+pair_coeff         * * sph/surfacetension ${h}
+pair_coeff         * * sph/surfacetension 0.1500000000000000222
+pair_coeff         ${l_type} ${l_type} sph/heatconduction/phasechange  ${D_heat_l} ${h}
+pair_coeff         1 ${l_type} sph/heatconduction/phasechange  ${D_heat_l} ${h}
+pair_coeff         1 1 sph/heatconduction/phasechange  ${D_heat_l} ${h}
+pair_coeff         1 1 sph/heatconduction/phasechange  0.2000000000000000111 ${h}
+pair_coeff         1 1 sph/heatconduction/phasechange  0.2000000000000000111 0.1500000000000000222
+variable           D_heat_ld equal 2*${D_heat_l}*${D_heat_v}/(${D_heat_v}+${D_heat_l})
+variable           D_heat_ld equal 2*0.2000000000000000111*${D_heat_v}/(${D_heat_v}+${D_heat_l})
+variable           D_heat_ld equal 2*0.2000000000000000111*0.5999999999999999778/(${D_heat_v}+${D_heat_l})
+variable           D_heat_ld equal 2*0.2000000000000000111*0.5999999999999999778/(0.5999999999999999778+${D_heat_l})
+variable           D_heat_ld equal 2*0.2000000000000000111*0.5999999999999999778/(0.5999999999999999778+0.2000000000000000111)
+pair_coeff         ${l_type} ${v_type} sph/heatconduction/phasechange  ${D_heat_ld} ${h} NULL ${Tc}
+pair_coeff         1 ${v_type} sph/heatconduction/phasechange  ${D_heat_ld} ${h} NULL ${Tc}
+pair_coeff         1 2 sph/heatconduction/phasechange  ${D_heat_ld} ${h} NULL ${Tc}
+pair_coeff         1 2 sph/heatconduction/phasechange  0.2999999999999999889 ${h} NULL ${Tc}
+pair_coeff         1 2 sph/heatconduction/phasechange  0.2999999999999999889 0.1500000000000000222 NULL ${Tc}
+pair_coeff         1 2 sph/heatconduction/phasechange  0.2999999999999999889 0.1500000000000000222 NULL 0
+pair_coeff         ${v_type} ${v_type} sph/heatconduction/phasechange  ${D_heat_v} ${h}
+pair_coeff         2 ${v_type} sph/heatconduction/phasechange  ${D_heat_v} ${h}
+pair_coeff         2 2 sph/heatconduction/phasechange  ${D_heat_v} ${h}
+pair_coeff         2 2 sph/heatconduction/phasechange  0.5999999999999999778 ${h}
+pair_coeff         2 2 sph/heatconduction/phasechange  0.5999999999999999778 0.1500000000000000222
+
+dump               dump_xyz all xyz ${Nfreq} ${dname}/data.xyz
+dump               dump_xyz all xyz 100 ${dname}/data.xyz
+dump               dump_xyz all xyz 100 data-ndim3/data.xyz
+dump_modify        dump_xyz element A B
+
+
+variable           insert_every equal 1
+variable           Hwv equal 8.0
+variable           dr equal 0.5*${dx}
+variable           dr equal 0.5*0.050000000000000002776
+variable           prob equal 0.01
+
+
+region            rsq sphere ${xcenter} ${ycenter} ${zcenter} 0.05 units box
+region            rsq sphere 0.5 ${ycenter} ${zcenter} 0.05 units box
+region            rsq sphere 0.5 0.5 ${zcenter} 0.05 units box
+region            rsq sphere 0.5 0.5 0.5 0.05 units box
+set               region rsq type ${v_type}
+set               region rsq type 2
+  8 settings made for type
+
+set               type ${v_type} meso_cv ${cv_v}
+set               type 2 meso_cv ${cv_v}
+set               type 2 meso_cv 0.040000000000000000833
+  8 settings made for meso_cv
+set               type ${l_type} meso_cv ${cv_l}
+set               type 1 meso_cv ${cv_l}
+set               type 1 meso_cv 0.040000000000000000833
+  7992 settings made for meso_cv
+set               type ${v_type} meso_e ${e_v}
+set               type 2 meso_e ${e_v}
+set               type 2 meso_e 0
+  8 settings made for meso_e
+set               type ${l_type} meso_e ${e_l}
+set               type 1 meso_e ${e_l}
+set               type 1 meso_e 0.040000000000000000833
+  7992 settings made for meso_e
+set               type ${v_type} mass ${mass_v}
+set               type 2 mass ${mass_v}
+set               type 2 mass 1.250000000000000314e-06
+  8 settings made for mass
+set               type ${l_type} mass ${mass_l}
+set               type 1 mass ${mass_l}
+set               type 1 mass 0.00012500000000000002971
+  7992 settings made for mass
+set               type ${v_type} meso_rho ${sph_rho_v}
+set               type 2 meso_rho ${sph_rho_v}
+set               type 2 meso_rho 0.010000000000000000208
+  8 settings made for meso_rho
+set               type ${l_type} meso_rho ${sph_rho_l}
+set               type 1 meso_rho ${sph_rho_l}
+set               type 1 meso_rho 1
+  7992 settings made for meso_rho
+
+group           bubble type ${v_type}
+group           bubble type 2
+8 atoms in group bubble
+compute         rho_peratom all meso_rho/atom
+compute         it_atom all meso_t/atom
+compute         ie_atom all meso_e/atom
+compute         ie all reduce sum c_ie_atom
+compute         ied bubble reduce sum c_ie_atom
+variable        bubble_energy equal c_ied
+variable        bubble_number equal count(bubble)
+variable        bubble_volume equal count(bubble)*${dx}^${ndim}
+variable        bubble_volume equal count(bubble)*0.050000000000000002776^${ndim}
+variable        bubble_volume equal count(bubble)*0.050000000000000002776^3
+variable        time equal step*${dt}
+variable        time equal step*2.3999999999999997855e-07
+variable        natoms equal count(all)
+fix extra all print 1 "${time} ${bubble_volume} ${bubble_number} ${bubble_energy}" file ${dname}/rg.dat screen no
+fix extra all print 1 "${time} ${bubble_volume} ${bubble_number} ${bubble_energy}" file data-ndim3/rg.dat screen no
+
+dump               dump_id all custom ${Nfreq} ${dname}/dump*.dat id type x y z vx vy vz                                                                   c_rho_peratom c_ie_atom c_it_atom
+dump               dump_id all custom 100 ${dname}/dump*.dat id type x y z vx vy vz                                                                   c_rho_peratom c_ie_atom c_it_atom
+dump               dump_id all custom 100 data-ndim3/dump*.dat id type x y z vx vy vz                                                                   c_rho_peratom c_ie_atom c_it_atom
+								  
+dump_modify        dump_id first yes sort id pad 8
+
+thermo_style        custom step v_time v_natoms v_bubble_number
+thermo              100
+
+variable           pcutoff equal ${h}
+variable           pcutoff equal 0.1500000000000000222
+fix                fdep bubble phase_change                    ${Tc} ${Tt} ${Hwv} ${dr} ${mass_v}                    ${pcutoff} ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 ${Tt} ${Hwv} ${dr} ${mass_v}                    ${pcutoff} ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 ${Hwv} ${dr} ${mass_v}                    ${pcutoff} ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 ${dr} ${mass_v}                    ${pcutoff} ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 ${mass_v}                    ${pcutoff} ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 1.250000000000000314e-06                    ${pcutoff} ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 1.250000000000000314e-06                    0.1500000000000000222 ${l_type} ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 1.250000000000000314e-06                    0.1500000000000000222 1 ${v_type} ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 1.250000000000000314e-06                    0.1500000000000000222 1 2 ${insert_every} 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 1.250000000000000314e-06                    0.1500000000000000222 1 2 1 123456 ${prob} region box units box
+fix                fdep bubble phase_change                    0 0.10000000000000000555 8 0.025000000000000001388 1.250000000000000314e-06                    0.1500000000000000222 1 2 1 123456 0.010000000000000000208 region box units box
+
+# outside of this sphere the temperature is 1.0
+variable          Rtemp equal ${xcenter}-2.6*${dx}
+variable          Rtemp equal 0.5-2.6*${dx}
+variable          Rtemp equal 0.5-2.6*0.050000000000000002776
+region            rtemp sphere ${xcenter} ${ycenter} ${zcenter} ${Rtemp} units box
+region            rtemp sphere 0.5 ${ycenter} ${zcenter} ${Rtemp} units box
+region            rtemp sphere 0.5 0.5 ${zcenter} ${Rtemp} units box
+region            rtemp sphere 0.5 0.5 0.5 ${Rtemp} units box
+region            rtemp sphere 0.5 0.5 0.5 0.36999999999999999556 units box
+fix               smeso      all setmeso meso_t ${Tinf} noregion rtemp
+fix               smeso      all setmeso meso_t 1 noregion rtemp
+
+variable          nstep equal 0.01/${dt}
+variable          nstep equal 0.01/2.3999999999999997855e-07
+
+if "${ndim}==2" then "fix e2d all enforce2d"
+run               ${nstep}
+run               41666.666666666671517
+Memory usage per processor = 4.37881 Mbytes
+Step time natoms bubble_n 
+       0            0         8000            8 
+     100      2.4e-05         8000            8 
+     200      4.8e-05         8008           16 
+     300      7.2e-05         8008           16 
+     400      9.6e-05         8008           16 
+     500      0.00012         8008           16 
+     600     0.000144         8008           16 
+     700     0.000168         8008           16 
+     800     0.000192         8008           16 
+     900     0.000216         8008           16 
+    1000      0.00024         8015           23 
+    1100     0.000264         8015           23 
+    1200     0.000288         8015           23 
+    1300     0.000312         8015           23 
+    1400     0.000336         8015           23 
+    1500      0.00036         8015           23 
+    1600     0.000384         8022           30 
+    1700     0.000408         8022           30 
+    1800     0.000432         8022           30 
+    1900     0.000456         8022           30 
+    2000      0.00048         8022           30 
+    2100     0.000504         8022           30 
+    2200     0.000528         8024           32 
+    2300     0.000552         8026           34 
+    2400     0.000576         8026           34 
+    2500       0.0006         8028           36 
+    2600     0.000624         8028           36 
+    2700     0.000648         8031           39 
+    2800     0.000672         8031           39 
+    2900     0.000696         8034           42 
+    3000      0.00072         8034           42 
+    3100     0.000744         8038           46 
+    3200     0.000768         8038           46 
+    3300     0.000792         8038           46 
+    3400     0.000816         8038           46 
+    3500      0.00084         8040           48 
+    3600     0.000864         8042           50 
+    3700     0.000888         8042           50 
+    3800     0.000912         8044           52 
+    3900     0.000936         8044           52 
+    4000      0.00096         8047           55 
+    4100     0.000984         8047           55 
+    4200     0.001008         8050           58 
+    4300     0.001032         8050           58 
+    4400     0.001056         8050           58 
+    4500      0.00108         8052           60 
+    4600     0.001104         8056           64 
+    4700     0.001128         8056           64 
+    4800     0.001152         8056           64 
+    4900     0.001176         8059           67 
+    5000       0.0012         8059           67 
+    5100     0.001224         8059           67 
+    5200     0.001248         8061           69 
+    5300     0.001272         8066           74 
+    5400     0.001296         8066           74 
+    5500      0.00132         8066           74 
+    5600     0.001344         8066           74 
+    5700     0.001368         8068           76 
+    5800     0.001392         8071           79 
+    5900     0.001416         8071           79 
+    6000      0.00144         8075           83 
+    6100     0.001464         8075           83 
+    6200     0.001488         8075           83 
+    6300     0.001512         8077           85 
+    6400     0.001536         8079           87 
+    6500      0.00156         8082           90 
+    6600     0.001584         8082           90 
+    6700     0.001608         8085           93 
+    6800     0.001632         8085           93 
+    6900     0.001656         8090           98 
+    7000      0.00168         8090           98 
+    7100     0.001704         8090           98 
+    7200     0.001728         8092          100 
+    7300     0.001752         8095          103 
+    7400     0.001776         8095          103 
+    7500       0.0018         8100          108 
+    7600     0.001824         8100          108 
+    7700     0.001848         8100          108 
+    7800     0.001872         8104          112 
+    7900     0.001896         8104          112 
+    8000      0.00192         8107          115 
+    8100     0.001944         8107          115 
+    8200     0.001968         8111          119 
+    8300     0.001992         8111          119 
+    8400     0.002016         8115          123 
+    8500      0.00204         8115          123 
+    8600     0.002064         8118          126 
+    8700     0.002088         8118          126 
+    8800     0.002112         8122          130 
+    8900     0.002136         8122          130 
+    9000      0.00216         8126          134 
+    9100     0.002184         8126          134 
+    9200     0.002208         8131          139 
+    9300     0.002232         8131          139 
+    9400     0.002256         8131          139 
+    9500      0.00228         8134          142 
+    9600     0.002304         8136          144 
+    9700     0.002328         8138          146 
+    9800     0.002352         8140          148 
+    9900     0.002376         8142          150 
+   10000       0.0024         8146          154 
+   10100     0.002424         8146          154 
+   10200     0.002448         8149          157 
+   10300     0.002472         8149          157 
+   10400     0.002496         8152          160 
+   10500      0.00252         8156          164 
+   10600     0.002544         8156          164 
+   10700     0.002568         8159          167 
+   10800     0.002592         8159          167 
+   10900     0.002616         8163          171 
+   11000      0.00264         8163          171 
+   11100     0.002664         8167          175 
+   11200     0.002688         8167          175 
+   11300     0.002712         8170          178 
+   11400     0.002736         8176          184 
+   11500      0.00276         8176          184 
+   11600     0.002784         8176          184 
+   11700     0.002808         8180          188 
+   11800     0.002832         8180          188 
+   11900     0.002856         8185          193 
+   12000      0.00288         8185          193 
+   12100     0.002904         8188          196 
+   12200     0.002928         8190          198 
+   12300     0.002952         8193          201 
+   12400     0.002976         8193          201 
+   12500        0.003         8199          207 
+   12600     0.003024         8199          207 
+   12700     0.003048         8201          209 
+   12800     0.003072         8204          212 
+   12900     0.003096         8204          212 
+   13000      0.00312         8209          217 
+   13100     0.003144         8209          217 
+   13200     0.003168         8215          223 
+   13300     0.003192         8215          223 
+   13400     0.003216         8216          224 
+   13500      0.00324         8219          227 
+   13600     0.003264         8223          231 
+   13700     0.003288         8223          231 
+   13800     0.003312         8226          234 
+   13900     0.003336         8229          237 
+   14000      0.00336         8234          242 
+   14100     0.003384         8235          243 
+   14200     0.003408         8235          243 
+   14300     0.003432         8240          248 
+   14400     0.003456         8240          248 
+   14500      0.00348         8243          251 
+   14600     0.003504         8247          255 
+   14700     0.003528         8247          255 
+   14800     0.003552         8253          261 
+   14900     0.003576         8253          261 
+   15000       0.0036         8258          266 
+   15100     0.003624         8258          266 
+   15200     0.003648         8263          271 
+   15300     0.003672         8263          271 
+   15400     0.003696         8269          277 
+   15500      0.00372         8269          277 
+   15600     0.003744         8274          282 
+   15700     0.003768         8274          282 
+   15800     0.003792         8279          287 
+   15900     0.003816         8279          287 
+   16000      0.00384         8283          291 
+   16100     0.003864         8283          291 
+   16200     0.003888         8289          297 
+   16300     0.003912         8289          297 
+   16400     0.003936         8297          305 
+   16500      0.00396         8297          305 
+   16600     0.003984         8297          305 
+   16700     0.004008         8304          312 
+   16800     0.004032         8304          312 
+   16900     0.004056         8309          317 
+   17000      0.00408         8309          317 
+   17100     0.004104         8313          321 
+   17200     0.004128         8316          324 
+   17300     0.004152         8317          325 
+   17400     0.004176         8322          330 
+   17500       0.0042         8322          330 
+   17600     0.004224         8328          336 
+   17700     0.004248         8329          337 
+   17800     0.004272         8332          340 
+   17900     0.004296         8336          344 
+   18000      0.00432         8338          346 
+   18100     0.004344         8342          350 
+   18200     0.004368         8346          354 
+   18300     0.004392         8347          355 
+   18400     0.004416         8353          361 
+   18500      0.00444         8353          361 
+   18600     0.004464         8358          366 
+   18700     0.004488         8358          366 
+   18800     0.004512         8363          371 
+   18900     0.004536         8366          374 
+   19000      0.00456         8368          376 
+   19100     0.004584         8373          381 
+   19200     0.004608         8373          381 
+   19300     0.004632         8377          385 
+   19400     0.004656         8381          389 
+   19500      0.00468         8386          394 
+   19600     0.004704         8386          394 
+   19700     0.004728         8392          400 
+   19800     0.004752         8392          400 
+   19900     0.004776         8397          405 
+   20000       0.0048         8404          412 
+   20100     0.004824         8404          412 
+   20200     0.004848         8406          414 
+   20300     0.004872         8410          418 
+   20400     0.004896         8414          422 
+   20500      0.00492         8415          423 
+   20600     0.004944         8421          429 
+   20700     0.004968         8423          431 
+   20800     0.004992         8426          434 
+   20900     0.005016         8430          438 
+   21000      0.00504         8435          443 
+   21100     0.005064         8437          445 
+   21200     0.005088         8441          449 
+   21300     0.005112         8447          455 
+   21400     0.005136         8450          458 
+   21500      0.00516         8450          458 
+   21600     0.005184         8454          462 
+   21700     0.005208         8459          467 
+   21800     0.005232         8462          470 
+   21900     0.005256         8465          473 
+   22000      0.00528         8468          476 
+   22100     0.005304         8472          480 
+   22200     0.005328         8479          487 
+   22300     0.005352         8479          487 
+   22400     0.005376         8485          493 
+   22500       0.0054         8486          494 
+   22600     0.005424         8492          500 
+   22700     0.005448         8494          502 
+   22800     0.005472         8498          506 
+   22900     0.005496         8504          512 
+   23000      0.00552         8505          513 
+   23100     0.005544         8511          519 
+   23200     0.005568         8512          520 
+   23300     0.005592         8517          525 
+   23400     0.005616         8523          531 
+   23500      0.00564         8524          532 
+   23600     0.005664         8529          537 
+   23700     0.005688         8535          543 
+   23800     0.005712         8536          544 
+   23900     0.005736         8543          551 
+   24000      0.00576         8544          552 
+   24100     0.005784         8549          557 
+   24200     0.005808         8552          560 
+   24300     0.005832         8557          565 
+   24400     0.005856         8562          570 
+   24500      0.00588         8565          573 
+   24600     0.005904         8569          577 
+   24700     0.005928         8576          584 
+   24800     0.005952         8579          587 
+   24900     0.005976         8583          591 
+   25000        0.006         8587          595 
+   25100     0.006024         8592          600 
+   25200     0.006048         8595          603 
+   25300     0.006072         8602          610 
+   25400     0.006096         8606          614 
+   25500      0.00612         8609          617 
+   25600     0.006144         8615          623 
+   25700     0.006168         8619          627 
+   25800     0.006192         8622          630 
+   25900     0.006216         8630          638 
+   26000      0.00624         8634          642 
+   26100     0.006264         8640          648 
+   26200     0.006288         8641          649 
+   26300     0.006312         8646          654 
+   26400     0.006336         8653          661 
+   26500      0.00636         8658          666 
+   26600     0.006384         8662          670 
+   26700     0.006408         8668          676 
+   26800     0.006432         8673          681 
+   26900     0.006456         8678          686 
+   27000      0.00648         8682          690 
+   27100     0.006504         8687          695 
+   27200     0.006528         8693          701 
+   27300     0.006552         8700          708 
+   27400     0.006576         8705          713 
+   27500       0.0066         8709          717 
+   27600     0.006624         8715          723 
+   27700     0.006648         8722          730 
+   27800     0.006672         8727          735 
+   27900     0.006696         8732          740 
+   28000      0.00672         8737          745 
+   28100     0.006744         8746          754 
+   28200     0.006768         8749          757 
+   28300     0.006792         8755          763 
+   28400     0.006816         8762          770 
+   28500      0.00684         8768          776 
+   28600     0.006864         8773          781 
+   28700     0.006888         8780          788 
+   28800     0.006912         8788          796 
+   28900     0.006936         8798          806 
+   29000      0.00696         8816          824 
+   29100     0.006984         8842          850 
+   29200     0.007008         8905          913 
+   29300     0.007032         9005         1013 
+   29400     0.007056         9222         1230 
+   29500      0.00708         9700         1708 
+   29600     0.007104        10781         2789 
+   29700     0.007128        13159         5167 
+   29800     0.007152        18045        10053 
+   29900     0.007176        27439        19447 
+ERROR: Lost atoms: original 48374 current 37058 (thermo.cpp:385)
