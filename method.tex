@@ -1,0 +1,60 @@
+\section[Model]{Model}
+\begin{frame}
+  \frametitle{Parts of the model}
+  \begin{itemize}
+  \item Navier-Stokes equations for velocity
+  \item Surface tension forces on the interface~\footnotemark
+  \item \alert{Heat conduction~\footnotemark[2]}
+  \item \alert{Evaporation model}
+  \end{itemize}
+  \begin{block}{Assumption}
+    Evaporation rate is controlled by heat supply
+    $\Longleftrightarrow$ vapor contains as little energy as it can
+    without condensation $\Longleftrightarrow$ vapor is at $T=T_s$
+  \end{block}
+
+  \footnotetext{\tiny \bibentry{Hu2006}}
+  \footnotetext[2]{\tiny \bibentry{Cleary1999}}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Heat conduction}
+  \begin{equation}
+    \label{eq:heatConductionTerm}
+    \frac{\partial U_i}{\partial t} = \sum_j\frac{4 m_i}{\rho_j \rho_i} \frac{k_j k_i}{k_j + k_i} \alert{T_{ij}} \frac{\partial W}{\partial r_{ij}}
+  \end{equation}
+  \begin{equation}
+    \label{eq:ideal}
+    U_i = c_{v,i} T_i
+  \end{equation}
+  For vapor-vapor and liquid-liquid interaction:
+  \begin{equation}
+    \label{eq:tij}
+    T_{ij} = \frac{2T_i \alert{T_j}}{T_i + \alert{T_j}}
+  \end{equation}
+  For liquid-vapor
+  \begin{equation}
+    \label{eq:tab}
+    T_{ij} = \frac{2T_i \alert{T_s}}{T_i + \alert{T_s}}
+  \end{equation}
+  where $T_s$ is a saturation temperature
+\end{frame}
+
+\begin{frame}
+  \frametitle{Evaporation model: particle creation}
+  \begin{block}{Rule}
+    If a vapor particle has $T>T_s$ and has a liquid particle as a
+    neighbor we create a new vapor particle
+  \end{block}
+  \begin{itemize}
+  \item mass is from a liquid particle ($m_{liquid} >> m_{vapor}$)
+  \item energy goes to vapor particle
+  \item mechanical momentum is distributed between ``new'' and ``old''
+    vapor particles
+  \end{itemize}
+\end{frame}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: t
+%%% End: 

@@ -44,110 +44,11 @@
   \tableofcontents
 \end{frame}
 
-\section[Motivation]{Motivation}
-\begin{frame}
-  \frametitle{Motivation: cooling}
-  \begin{columns}
-    \begin{column}{0.5\textwidth}
-      \begin{block}{Why microchannels?}
-        \begin{itemize}
-        \item Devices are smaller
-        \item Higher surface to volume ratio
-        \end{itemize}
-      \end{block}
-      \begin{block}{Why boiling?}
-        \begin{itemize}
-        \item Heat of evaporation
-        \item Uniform and predictable temperature
-        \end{itemize}
-      \end{block}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \begin{figure}
-        \centering
-        \includegraphics[width=1.1cm]{exp01.png}
-        \includegraphics[width=1.1cm]{exp02.png}
-        \includegraphics[width=1.1cm]{exp03.png}
-        \includegraphics[width=1.1cm]{exp04.png}
-        \includegraphics[width=1.1cm]{exp05.png}
-        \caption{Flow Boiling Regimes~\footnotemark}
-        \label{fig:self}
-      \end{figure}
-    \end{column}
-  \end{columns}
-  \footnotetext{\tiny \bibentry{baldassari2012flow}}
-\end{frame}
+\input{intro.tex}
+\input{method.tex}
+\input{results.tex}
+\input{concl.tex}
 
-\begin{frame}
-  \frametitle{Motivation II}
-  \begin{block}{Why microchannels are different?}
-    \begin{itemize}
-    \item $\Uparrow$ viscosity, diffusion, surface tension, contact lines
-    \item $\Downarrow$ gravity, inertia
-    \end{itemize}
-  \end{block}
-
-  \begin{block}{Viscosity}
-    $1<\text{Re}<2000$ $\implies$ full Navier-Stokes (NS) equations~\footnotemark
-  \end{block}
-  \footnotetext{\tiny \bibentry{worner_numerical_2012}}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Models}
-  \begin{itemize}
-  \item VOF \\
-    \bibintext{welch_local_1995}, \\
-    \bibintext{kunkelmann_cfd_2009}
-  \item Lattice Boltzmann \\
-    \bibintext{markus_pool_2012}
-  \item Particle-Based \\
-    \bibintext{muller_particle-based_2005}, \\ 
-   \bibintext{yoon_direct_2001}
-  \end{itemize}
-\end{frame}
-
-\section[Model]{Model}
-\begin{frame}
-  \frametitle{Parts of the model}
-  \begin{itemize}
-  \item Navier-Stokes equations for velocity
-  \item Surface tension forces on the interface~\footnotemark
-  \item \alert{Heat conduction~\footnotemark[2]}
-  \item \alert{Evaporation model}
-  \end{itemize}
-  \begin{block}{Assumption}
-    Evaporation rate is controlled by heat supply
-    $\Longleftrightarrow$ vapor contains as little energy as it can
-    without condensation $\Longleftrightarrow$ vapor is at $T=T_s$
-  \end{block}
-
-  \footnotetext{\tiny \bibentry{Hu2006}}
-  \footnotetext[2]{\tiny \bibentry{Cleary1999}}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Heat conduction}
-  \begin{equation}
-    \label{eq:heatConductionTerm}
-    \frac{\partial U_i}{\partial t} = \sum_j\frac{4 m_i}{\rho_j \rho_i} \frac{k_j k_i}{k_j + k_i} \alert{T_{ij}} \frac{\partial W}{\partial r_{ij}}
-  \end{equation}
-  \begin{equation}
-    \label{eq:ideal}
-    U_i = c_{v,i} T_i
-  \end{equation}
-  For vapor-vapor and liquid-liquid interaction:
-  \begin{equation}
-    \label{eq:tij}
-    T_{ij} = \frac{2T_i \alert{T_j}}{T_i + \alert{T_j}}
-  \end{equation}
-  For liquid-vapor
-  \begin{equation}
-    \label{eq:tab}
-    T_{ij} = \frac{2T_i \alert{T_s}}{T_i + \alert{T_s}}
-  \end{equation}
-  where $T_s$ is a saturation temperature
-\end{frame}
 
 \begin{frame}
   \frametitle{Evaporation model: particle creation}
@@ -242,4 +143,5 @@
   \item Model is tested for bubble growth and bubble departure
   \end{itemize}
 \end{frame}
+
 \end{document}
