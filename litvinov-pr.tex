@@ -1,21 +1,17 @@
 \documentclass{beamer}
-\usepackage{graphicx}
-\usepackage{amssymb}
+\usepackage{graphicx,caption,subfig}
+\usepackage{amssymb,sansmath,bm,amsmath,mathrsfs}
 \usepackage{perpage}
 \usepackage{beamerthemeshadow}
-
 \mode<presentation>
 {
   \usetheme{Frankfurt}
 }
-
 \setbeamertemplate{footline}[page number]
 \usepackage[english]{babel}
 \setbeamertemplate{navigation symbols}{}%remove navigation symbols
 \newcommand{\bibintext}[1]{{\tiny \bibentry{#1}}}
-
 \usepackage{bibentry}
-
 \def\newblock{\hskip .11em plus .33em minus .07em}
 \usepackage{times}
 
@@ -48,100 +44,7 @@
 \input{method.tex}
 \input{results.tex}
 \input{concl.tex}
-
-
-\begin{frame}
-  \frametitle{Evaporation model: particle creation}
-  \begin{block}{Rule}
-    If a vapor particle has $T>T_s$ and has a liquid particle as a
-    neighbor we create a new vapor particle
-  \end{block}
-  \begin{itemize}
-  \item mass is from a liquid particle ($m_{liquid} >> m_{vapor}$)
-  \item energy goes to vapor particle
-  \item mechanical momentum is distributed between ``new'' and ``old''
-    vapor particles
-  \end{itemize}
-\end{frame}
-
-\section{Validation}
-\begin{frame}
-  \frametitle{A bubble growth}
-  \begin{itemize}
-  \item Initial condition: ``seed'' vapor particles in the center of
-    the domain
-  \item Domain is periodic, edges of the domain $T=T_s +
-    \Delta T$
-  \item Theory predicts a self similar temperature profile $T =
-    T(r/R(t))$, where $r$~---~distance from the center, $R(t)$~---~radius of
-    the bubble
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{A bubble growth}
-  \begin{figure}
-    \centering
-    \includegraphics[width=0.65\textwidth]{img/polymer_loc-14.png}
-    \caption{Temperature profile at different times vs normalized
-      distance from the center of the domain}
-    \label{fig:self}
-  \end{figure}
-\end{frame}
-
-\begin{frame}
-  \frametitle{A bubble growth}
-  \begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.5\textwidth]{img/polymer_loc.png}
-    \caption{Radius of the bubble vs time. Theory: $R(t) \propto \sqrt{t}$}
-    \label{fig:dep}
-  \end{figure}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Departure of the bubble from the wall}
-  \begin{itemize}
-  \item Bottom and top: wall, rest of the boundaries are periodic
-  \item Initial condition: the bottom wall temperature $T=T_s + \Delta T$
-  \item Initial condition: the bulk temperature $T=T_s$
-  \item ``Seed'' vapor particles at the center of the bottom wall
-  \item Buoyancy vs surface tension
-  \end{itemize}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Departure of the bubble from the wall}
-  \begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{gnuplot/dep-59.pdf}
-    \caption{Snapshot of bubble departure from the super-heated
-      surface. Liquid particles are not shown.}
-    \label{fig:snapshot}
-  \end{figure}
-\end{frame}
-
-\begin{frame}
-  \begin{figure}[t]
-    \centering
-    \includegraphics{gnuplot/dep.pdf}
-    \caption{Bubble departure radios versus gravity
-      force. Theory:~$R_{dep} \propto 1/\sqrt{g})$ }
-    \label{fig:radii}
-  \end{figure}
-  \bibliographystyle{elsart-num}
-  \nobibliography{bibdata,intro}
-\end{frame}
-
-\section{Conclusions}
-\begin{frame}
-  \frametitle{Conclusions}
-  \begin{itemize}
-  \item Particle based model for evaporation is proposed
-  \item Heat supply is a rate limiting step: superheated and subheated
-    liquid
-  \item Model is tested for bubble growth and bubble departure
-  \end{itemize}
-\end{frame}
-
+\bibliographystyle{elsart-num}
+\nobibliography{bibdata}
+%   \nobibliography{bibdata}
 \end{document}
