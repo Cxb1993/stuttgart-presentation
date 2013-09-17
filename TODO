@@ -4,3 +4,55 @@
 - [ ] concl.tex
 - [ ] results.tex
 
+http://gow.epsrc.ac.uk/NGBOViewGrant.aspx?GrantRef=EP/I004262/1
+Flows of complex fluids (such as polymers, colloids, emulsions, pastes
+etc.) are abundant in everyday life. One can think of pouring syrup
+from a bottle or squeezing toothpaste from a tube, but also of
+fibre-spinning and extrusion - processes used to produce plastic bags,
+optical fibres, wire coatings, guitar strings etc. Complex fluids, and
+polymer solutions in particular, often exhibit unexpected behaviour -
+they do not flow like water. For example, if one rotates a spoon in a
+cup of tea, the tea is pushed towards the walls of the cup. When,
+instead, this experiment is repeated with a polymeric liquid, the
+polymers move towards the spoon producing the so-called rod-climbing
+effect.What is even more surprising is that flows of polymers can
+become unstable. One of the famous examples is the melt-fracture
+phenomenon observed in extrusion of concentrated polymer solutions or
+melts, which is one of the main elements of polymer processing in
+industry. There the liquid is pressed through a thin capillary to
+produce a regular jet of polymers. At low extrusion speeds the jet
+remains straight and homogeneous, while at larger speeds the flow
+starts undulating, becomes chaotic and eventually breaks up. These
+instabilities are one of the main production-limiting factors and have
+been plaguing technology and industry for years. Their presence is
+surprising since in Newtonian flows, instabilities and the transition
+to turbulence are inertia-driven, and are expected to occur when the
+Reynolds number exceeds some critical value. The Reynolds number
+characterises the ratio of inertial to viscous effects and is
+inversely proportional to the fluid viscosity. For extremely viscous
+polymeric fluids typical Reynolds numbers are very small, far below
+the critical value. The inertia-driven transition is thus absent and
+can not explain instabilities in polymeric solutions. Instead, some
+other mechanism causes destabilisation.The striking properties of
+polymer solutions and melts arise from the interactions between their
+microstructure and the flow: long polymer molecules are stretched and
+oriented by the flow. In the past 20 years, we have begun to
+understand that flow-induced stretching and orientation of polymers
+can not only make polymers flow differently than water, but can also
+destabilise the flow, leading to vortices and random flows. This
+chaotic motion looks similar to Newtonian turbulence but is not
+inertial in origin. This new type of turbulence, the so-called elastic
+turbulence, is poorly understood and little is known about its
+structure and conditions at which it might appear.The aim of this
+research programme is to study this new type of turbulence by means of
+computer simulations and semi-analytical methods recently developed to
+describe the structure of Newtonian turbulence close to the
+transition. The motivation to perform this study is three-fold. First,
+this is a completely new type of turbulence which we have not
+encountered in Newtonian fluids like water. Since many every-day
+fluids are non-Newtonian and viscoelastic, it might be that
+understanding elastic turbulence is even more important than
+understanding Newtonian one. Secondly, understanding the origin of
+elastic turbulence might provide a solution to the industrial problems
+like melt-fracture. Finally, by comparing the two, we may learn
+something about the mechanism of Newtonian turbulence.
