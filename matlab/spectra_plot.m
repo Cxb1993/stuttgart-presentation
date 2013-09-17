@@ -1,0 +1,10 @@
+close all;
+load spectra_512.dat;
+C=1.1e9;
+tau=-3.8;
+loglog(spectra_512(:,1), spectra_512(:,2),'b*');
+hold on;
+f=C.*spectra_512(:,1).^tau;
+loglog(spectra_512(:,1),f,'r-');
+legend('simulation','Ek\sim k^{-3.8}');
+xlabel('k'),ylabel('E(k)');
