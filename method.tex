@@ -1,37 +1,37 @@
 \section[Model]{Model}
-\begin{frame}
-  \frametitle{SDPD}
-   \begin{block}{}
-   SDPD is an extension of SPH method for mesoscopic scale by introducing thermal fluctuations in a consistent
-way through the fluctuation-dissipation theorem.
-  \end{block}
- \begin{itemize}
-  \item \alert{SPH for Navier-Stokes Equation}
-  \item \alert{Thermal fluctuations} %~\footnotemark
-  \item \alert{Mechanical Modeling of the Polymer Molecule}%~\footnotemark[2]
-  \end{itemize}
-\end{frame}
-\begin{frame}
-  \frametitle{SPH for Navier-Stokes Equation}
-Navier-Stokes Equation
-\begin{equation}\label{equ:masscon}
- \frac{d\rho}{dt}=-\rho\nabla\cdot\mathbf{v},
-\end{equation}
-\begin{equation}\label{equ:momecon}
- \frac{\mathbf{dv}}{dt}=\mathbf{g}-\frac{1}{\rho}\mathbf{\nabla}p+\mathbf{F}
-\end{equation}
+% \begin{frame}
+%   \frametitle{SDPD}
+%    \begin{block}{}
+%    SDPD is an extension of SPH method for mesoscopic scale by introducing thermal fluctuations in a consistent
+% way through the fluctuation-dissipation theorem.
+%   \end{block}
+%  \begin{itemize}
+%   \item \alert{SPH for Navier-Stokes Equation}
+%   \item \alert{Thermal fluctuations} %~\footnotemark
+%   \item \alert{Mechanical Modeling of the Polymer Molecule}%~\footnotemark[2]
+%   \end{itemize}
+% \end{frame}
+% \begin{frame}
+%   \frametitle{SPH for Navier-Stokes Equation}
+% Navier-Stokes Equation
+% \begin{equation}\label{equ:masscon}
+%  \frac{d\rho}{dt}=-\rho\nabla\cdot\mathbf{v},
+% \end{equation}
+% \begin{equation}\label{equ:momecon}
+%  \frac{\mathbf{dv}}{dt}=\mathbf{g}-\frac{1}{\rho}\mathbf{\nabla}p+\mathbf{F}
+% \end{equation}
 
-SPH formulation:
-  \begin{equation}\label{equ:rho}
- \rho_i=m_i \sum_j W_{ij}
-\end{equation}
-  \begin{equation}\label{equ:momeevo}
- \frac{d\mathbf{v}_{i}^{(p)}}{dt}=-\frac{1}{m_i}\sum_j\left(\frac{p_i}{d_{i}^{2}}+\frac{p_j}{d_{j}^{2}}\right)\frac{\partial W}{\partial r_{ij}}\mathbf{e}_{ij},
-\end{equation}
-\begin{equation}\label{equ:acceleration}
- \frac{d\mathbf{v}{_i}^{(v)}}{dt}=-\frac{\eta}{m_i}\sum_j\left(\frac{p^i}{d_{i}^{2}}+\frac{p^j}{d_{j}^{2}}\right)\frac{1}{r_{ij}}\frac{\partial W}{\partial r_{ij}}(\mathbf{e}_{ij}\cdot\mathbf{v}_{ij}\mathbf{e}_{ij}+\mathbf{v}_{ij}),
-\end{equation}
-\end{frame}
+% SPH formulation:
+%   \begin{equation}\label{equ:rho}
+%  \rho_i=m_i \sum_j W_{ij}
+% \end{equation}
+%   \begin{equation}\label{equ:momeevo}
+%  \frac{d\mathbf{v}_{i}^{(p)}}{dt}=-\frac{1}{m_i}\sum_j\left(\frac{p_i}{d_{i}^{2}}+\frac{p_j}{d_{j}^{2}}\right)\frac{\partial W}{\partial r_{ij}}\mathbf{e}_{ij},
+% \end{equation}
+% \begin{equation}\label{equ:acceleration}
+%  \frac{d\mathbf{v}{_i}^{(v)}}{dt}=-\frac{\eta}{m_i}\sum_j\left(\frac{p^i}{d_{i}^{2}}+\frac{p^j}{d_{j}^{2}}\right)\frac{1}{r_{ij}}\frac{\partial W}{\partial r_{ij}}(\mathbf{e}_{ij}\cdot\mathbf{v}_{ij}\mathbf{e}_{ij}+\mathbf{v}_{ij}),
+% \end{equation}
+% \end{frame}
 
 \begin{frame}[label=general]
   \frametitle{Simulation of Polymer in SDPD framework}
@@ -57,47 +57,37 @@ SPH formulation:
   \end{columns}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Thermal fluctuations}
-% The irreversible part of the particle dynamic~\cite{Hu06} in SPH method is
-% \begin{eqnarray}\label{equ:thermal}
-% & &\dot{m}_i\vert_{irr}=0 \nonumber \\
-% & &\dot{\mathbf{P}}_i\vert_{irr}=\eta\sum_j\left(\frac{1}{d_{i}^{2}}+\frac{1}{d_{j}^{2}}\right)\frac{1}{r_{ij}}\frac{\partial W}{\partial r_{ij}}(\mathbf{e}_{ij}\cdot\mathbf{v}_{ij}\mathbf{e}_{ij}+\mathbf{v}_{ij})
-% \end{eqnarray}
-% According to the GENERIC formalism~\cite{Grmela1997}, thermal fluctuations can be take into account by postulating the mass and the momentum fluctuations
-% of particle $i$
-% \begin{eqnarray}\label{equ:thermalb}
-% & & d\tilde{m}_i=0 \nonumber \\
-% & & d\tilde{\mathbf{P}}_i=\sum_j B_{ij}d\bar{\mathscr{W}}_{ij}\cdot\mathbf{e}_{ij}
-% \end{eqnarray}
-% where $d\bar{\mathscr{W}}_{ij}$ is the traceless symmetric part of a matrix of independent increments of a Wiener process
-% $d\mathscr{W}_{ij}=d\mathscr{W}_{ji}$ i.e., $d\bar{\mathscr{W}}_{ij}=(d\mathscr{W}_{ij}+d\mathscr{W}_{ji}^T)/2-tr[d\mathscr{W}_{ij}]\mathbf{I}/D$.
-% \end{frame}
 % \begin{frame}
-The isothermal deterministic irreversible equations are:
-\begin{eqnarray}\label{equ:thermalfur}
-  & &\dot{m}_i\vert_{irr}=0  \nonumber \\
-& &\dot{\mathbf{P}}_i\vert_{irr}=-\sum_j\frac{B_{ij}^2}{4k_BT}
-(\mathbf{e}_{ij}\cdot\mathbf{v}_{ij}\mathbf{e}_{ij}+\mathbf{v}_{ij}),
-\end{eqnarray}
-where $k_B$ is the Boltzmann constant and $T$ is the system temperature, and $B_{ij}$ is
-\begin{equation}\label{equ:b}
- B_{ij}=[-4k_BT\eta\left(\frac{1}{d_{i}^{2}}+\frac{1}{d_{j}^{2}}\right)\frac{1}{r_{ij}}\frac{\partial W}{\partial r_{ij}}]^{1/2}.
-\end{equation}
-\end{frame}
+%   \frametitle{Thermal fluctuations}
+% % The irreversible part of the particle dynamic~\cite{Hu06} in SPH method is
+% % \begin{eqnarray}\label{equ:thermal}
+% % & &\dot{m}_i\vert_{irr}=0 \nonumber \\
+% % & &\dot{\mathbf{P}}_i\vert_{irr}=\eta\sum_j\left(\frac{1}{d_{i}^{2}}+\frac{1}{d_{j}^{2}}\right)\frac{1}{r_{ij}}\frac{\partial W}{\partial r_{ij}}(\mathbf{e}_{ij}\cdot\mathbf{v}_{ij}\mathbf{e}_{ij}+\mathbf{v}_{ij})
+% % \end{eqnarray}
+% % According to the GENERIC formalism~\cite{Grmela1997}, thermal fluctuations can be take into account by postulating the mass and the momentum fluctuations
+% % of particle $i$
+% % \begin{eqnarray}\label{equ:thermalb}
+% % & & d\tilde{m}_i=0 \nonumber \\
+% % & & d\tilde{\mathbf{P}}_i=\sum_j B_{ij}d\bar{\mathscr{W}}_{ij}\cdot\mathbf{e}_{ij}
+% % \end{eqnarray}
+% % where $d\bar{\mathscr{W}}_{ij}$ is the traceless symmetric part of a matrix of independent increments of a Wiener process
+% % $d\mathscr{W}_{ij}=d\mathscr{W}_{ji}$ i.e., $d\bar{\mathscr{W}}_{ij}=(d\mathscr{W}_{ij}+d\mathscr{W}_{ji}^T)/2-tr[d\mathscr{W}_{ij}]\mathbf{I}/D$.
+% % \end{frame}
+% % \begin{frame}
+% The isothermal deterministic irreversible equations are:
+% \begin{eqnarray}\label{equ:thermalfur}
+%   & &\dot{m}_i\vert_{irr}=0  \nonumber \\
+% & &\dot{\mathbf{P}}_i\vert_{irr}=-\sum_j\frac{B_{ij}^2}{4k_BT}
+% (\mathbf{e}_{ij}\cdot\mathbf{v}_{ij}\mathbf{e}_{ij}+\mathbf{v}_{ij}),
+% \end{eqnarray}
+% where $k_B$ is the Boltzmann constant and $T$ is the system temperature, and $B_{ij}$ is
+% \begin{equation}\label{equ:b}
+%  B_{ij}=[-4k_BT\eta\left(\frac{1}{d_{i}^{2}}+\frac{1}{d_{j}^{2}}\right)\frac{1}{r_{ij}}\frac{\partial W}{\partial r_{ij}}]^{1/2}.
+% \end{equation}
+% \end{frame}
 
 \begin{frame}
   \frametitle{Mechanical Modeling of the Polymer Molecule}
-%   \begin{block}{Rule}
-%     If a vapor particle has $T>T_s$ and has a liquid particle as a
-%     neighbor we create a new vapor particle
-%   \end{block}
-%   \begin{itemize}
-%   \item mass is from a liquid particle ($m_{liquid} >> m_{vapor}$)
-%   \item energy goes to vapor particle
-%   \item mechanical momentum is distributed between ``new'' and ``old''
-%     vapor particles
-%   \end{itemize}
 Finitely extensible nonlinear elastic(FENE) springs
 \begin{equation}\label{equ:fene}
  \mathbf{F}^{FENE}(\mathbf{r}_{ij})=\frac{K\mathbf{r}_{ij}}{1-(r/R_0)^2}
@@ -109,6 +99,32 @@ FENE-E springs
 \end{equation}
 where $\delta$ is given minimal distance between neighboring beads.
 \end{frame}
+
+\begin{frame}
+\frametitle{Numerical Setup} 
+\begin{block}{A square periodic domain}
+ \begin{itemize}
+  \item Total number of particles: $512 \times 512 = 262144$.
+  \item Domain size: $ 0.0128\times 0.0128$.
+  \item Polymer chains: $8$ beads and $16$ beads.
+ \end{itemize}
+\begin{table}
+\begin{center}
+  \begin{tabular}{| c | c | c |  c| c | c | c | c | c |}
+    \hline
+    Parameter & $\Delta x$ & $\rho$ & c & $\eta$ & $K$ & $R_0$ & $\delta$ \\ 
+    \hline
+    Value & $2.5E-5$ & 1 & 10 & 0.003 & 0.01 & 4.0 & 1.0 \\ 
+   \hline
+  \end{tabular}
+\end{center}
+\caption {The value of parameters in simulation}
+\label{tab:roll}
+\end{table}
+\end{block}
+\end{frame}
+
+
 
 %%% Local Variables: 
 %%% mode: latex
