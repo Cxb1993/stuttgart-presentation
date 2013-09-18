@@ -1,5 +1,33 @@
 \section{Results}
 \begin{frame}
+\frametitle{Numerical Setup} 
+\begin{block}{A square periodic domain}
+ \begin{itemize}
+  \item Total number of particles: $512 \times 512 = 262144$.
+  \item Domain size: $ 0.0128\times 0.0128$.
+  \item Polymer chains: $8$ beads and $16$ beads.
+ \end{itemize}
+\begin{table}
+\begin{center}
+  \begin{tabular}{| c | c | c |  c| c | c | c | c | c |}
+    \hline
+    Parameter & $\Delta x$ & $\rho$ & c & $\eta$ & $K$ & $R_0$ & $\delta$ \\ 
+    \hline
+    Value & $2.5E-5$ & 1 & 10 & 0.003 & 0.01 & 4.0 & 1.0 \\ 
+   \hline
+  \end{tabular}
+\end{center}
+\caption {The value of parameters in simulation}
+\label{tab:roll}
+\end{table}
+\end{block}
+
+
+
+\end{frame}
+
+
+\begin{frame}
   \frametitle{Flow of Pure Solvent}
 %   \begin{itemize}
 %   \item Initial condition: ``seed'' vapor particles in the center of
@@ -34,7 +62,7 @@
 \begin{frame}
   \frametitle{Flow of Polymer Solution}
 \begin{figure}[ht]
-\includegraphics[width=0.5\textwidth]{img/polymer_loc-12.png}
+\includegraphics[width=0.5\textwidth]{img/polymer_loc-13.png}
 \includegraphics[width=0.5\textwidth]{img/polymer_loc-7.png}
 \caption{Vorticity field and velocity of the point $P_0$ in flow of polymer solution at $Wi\approx5$.}
 \label{fug:vor_pol5}
@@ -49,6 +77,18 @@
 % \label{fug:vel_pol5}
 % \end{figure}
 % \end{frame}
+
+\begin{frame}
+ \begin{figure}
+    \centering
+    \includegraphics[width=0.51\textwidth]{img/polymer_global.jpg}
+    \includegraphics[width=0.4\textwidth]{img/polymer_local_3}
+
+    \caption{Snapshot of polymer solution at $Wi\approx5$ in global and local view,respectively.}
+    \label{fig:vor_sol}
+  \end{figure}
+\end{frame}
+
 \begin{frame}
   \frametitle{Flow of Polymer Solution}
   \begin{figure}[ht]
