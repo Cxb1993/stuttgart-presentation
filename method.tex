@@ -9,11 +9,7 @@ way through the fluctuation-dissipation theorem.
   \item \alert{SPH for Navier-Stokes Equation}
   \item \alert{Thermal fluctuations} %~\footnotemark
   \item \alert{Mechanical Modeling of the Polymer Molecule}%~\footnotemark[2]
-%   \item \alert{Evaporation model}
   \end{itemize}
-
-%   \footnotetext{\tiny \bibentry{Hu2006}}
-%   \footnotetext[2]{\tiny \bibentry{Cleary1999}}
 \end{frame}
 \begin{frame}
   \frametitle{SPH for Navier-Stokes Equation}
@@ -38,20 +34,22 @@ SPH formulation:
 \end{frame}
 
 \begin{frame}[label=general]
-  \frametitle{Simulation of Polymer in SPH framework}
+  \frametitle{Simulation of Polymer in SDPD framework}
    \begin{columns}
     \begin{column}{0.6\textwidth}
       \begin{itemize}
       \item the  model of a polymer is a chain of SPH particles 
       \item thermal fluctuations are taken into account according 
         to GENERIC in thermodynamically consistent way
-      \item bounded beads in addition to hydrodynamic interaction are subject to \textit{spring force}:
+      \item bounded beads in addition to hydrodynamic interaction are
+        subject to \textit{spring force}
       \end{itemize}      
     \end{column}    
     \begin{column}{0.5\textwidth}
       \begin{figure}
         \centering
-        \includegraphics<1>[width=0.8\textwidth]{img/fin.png}
+        \includegraphics<1>[width=0.85\textwidth]{img/fin.png}
+        \includegraphics<2>[width=0.85\textwidth]{img/vmdscene.png}
         \caption{Typical simulation configuration for 3D}
         \label{fig:fds}
       \end{figure}
