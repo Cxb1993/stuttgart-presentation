@@ -38,10 +38,10 @@
    \begin{columns}
     \begin{column}{0.6\textwidth}
       \begin{itemize}
-      \item the  model of a polymer is a chain of SPH particles 
-      \item thermal fluctuations are taken into account according 
+      \item The  model of a polymer is a chain of SPH particles 
+      \item Thermal fluctuations are taken into account according 
         to GENERIC in thermodynamically consistent way
-      \item bounded beads in addition to hydrodynamic interaction are
+      \item Bounded beads in addition to hydrodynamic interaction are
         subject to \textit{spring force}
       \end{itemize}      
     \end{column}    
@@ -87,7 +87,7 @@
 % \end{frame}
 
 \begin{frame}
-  \frametitle{Mechanical Modeling of the Polymer Molecule}
+  \frametitle{Mechanical Modeling of the Polymer Chain}
 Finitely extensible nonlinear elastic(FENE) springs
 \begin{equation}\label{equ:fene}
  \mathbf{F}^{FENE}(\mathbf{r}_{ij})=\frac{K\mathbf{r}_{ij}}{1-(r/R_0)^2}
@@ -104,9 +104,9 @@ where $\delta$ is given minimal distance between neighboring beads.
 \frametitle{Numerical Setup} 
 \begin{block}{A square periodic domain}
  \begin{itemize}
-  \item Total number of particles: $512 \times 512 = 262144$.
-  \item Domain size: $ 0.0128\times 0.0128$.
-  \item Polymer chains: $8$ beads and $16$ beads.
+  \item total number of particles: $512 \times 512 = 262144$.
+  \item domain size: $ 0.0128\times 0.0128$.
+  \item polymer chains: $8$ beads and $16$ beads.
  \end{itemize}
 \begin{table}
 \begin{center}
